@@ -1,0 +1,294 @@
+*{
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#f5f7fb;
+    padding:20px;
+    margin:0;
+}
+
+h1{
+    text-align:center;
+    font-size:32px;
+}
+
+/* SEARCH */
+
+.search-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.search-box{
+    position:relative;
+    width:380px;
+    max-width:100%;
+}
+
+#searchName{
+    width:100%;
+    padding:10px 40px 10px 12px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+#clearSearch{
+    display:none;
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    background:transparent;
+    border:none;
+    color:#777;
+    font-size:18px;
+    cursor:pointer;
+    padding:0;
+}
+
+#clearSearch:hover{
+    color:#333;
+}
+
+/* CONTROLS */
+
+.controls{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:15px;
+}
+
+input, select{
+    padding:8px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+button{
+    padding:8px 15px;
+    background:#4a90e2;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.save{
+    background:#27ae60;
+}
+
+.menu-btn{
+    background:#333;
+    font-size:20px;
+    width:45px;
+    height:40px;
+}
+
+/* MENU */
+
+.side-menu{
+    display:none;
+    position:absolute;
+    right:40px;
+    top:130px;
+    width:320px;
+    max-width:90vw;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 5px 15px rgba(0,0,0,.2);
+    z-index:1000;
+}
+
+.side-menu h3{
+    text-align:center;
+}
+
+.close-btn{
+    position:absolute;
+    right:10px;
+    top:10px;
+    width:30px;
+    height:30px;
+    padding:0;
+    border-radius:50%;
+    background:#e74c3c;
+    font-weight:bold;
+}
+
+.folder{
+    background:#eee;
+    padding:10px;
+    margin:5px;
+    border-radius:5px;
+    cursor:pointer;
+    text-align:left;
+}
+
+.folder:hover{
+    background:#ddd;
+}
+
+.social-main{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+#folderArrow{
+    color:#777;
+    font-size:14px;
+}
+
+.sub-folder{
+    display:none;
+    margin-left:15px;
+}
+
+.folder-row{
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+.folder-name{
+    flex:1;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.delete-folder{
+    background:#e74c3c;
+    padding:8px;
+    flex-shrink:0;
+}
+
+/* GRAPH + DETAILS */
+
+.main{
+    display:flex;
+    gap:15px;
+}
+
+#cy{
+    width:75%;
+    height:600px;
+    background:white;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+#details{
+    width:25%;
+    height:570px;
+    background:white;
+    padding:15px;
+    overflow:auto;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+.remove{
+    background:#e74c3c;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media (max-width:768px){
+
+    body{
+        padding:10px;
+    }
+
+    h1{
+        font-size:24px;
+        margin-bottom:15px;
+    }
+
+    .search-container{
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .search-box{
+        width:100%;
+    }
+
+    .search-container button{
+        width:100%;
+    }
+
+    .controls{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .controls input,
+    .controls select,
+    .controls button{
+        width:100%;
+        font-size:16px;
+    }
+
+    .menu-btn{
+        width:100%;
+    }
+
+    .main{
+        flex-direction:column;
+    }
+
+    #cy{
+        width:100%;
+        height:430px;
+    }
+
+    #details{
+        width:100%;
+        height:auto;
+        min-height:180px;
+    }
+
+    .side-menu{
+        position:fixed;
+        top:20px;
+        left:5%;
+        right:5%;
+        width:90%;
+        max-width:none;
+    }
+
+    .folder-row{
+        width:100%;
+    }
+
+    .folder-name{
+        white-space:normal;
+    }
+}
+
+/* VERY SMALL PHONES */
+
+@media (max-width:420px){
+
+    h1{
+        font-size:21px;
+    }
+
+    #cy{
+        height:360px;
+    }
+
+    button{
+        font-size:15px;
+    }
+}
