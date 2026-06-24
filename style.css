@@ -11,10 +11,7 @@ body{
 
 h1{
     text-align:center;
-    font-size:32px;
 }
-
-/* SEARCH */
 
 .search-container{
     display:flex;
@@ -40,22 +37,15 @@ h1{
 #clearSearch{
     display:none;
     position:absolute;
-    right:12px;
+    right:10px;
     top:50%;
     transform:translateY(-50%);
     background:transparent;
-    border:none;
     color:#777;
+    border:none;
     font-size:18px;
-    cursor:pointer;
     padding:0;
 }
-
-#clearSearch:hover{
-    color:#333;
-}
-
-/* CONTROLS */
 
 .controls{
     display:flex;
@@ -88,18 +78,14 @@ button{
 .menu-btn{
     background:#333;
     font-size:20px;
-    width:45px;
-    height:40px;
 }
-
-/* MENU */
 
 .side-menu{
     display:none;
     position:absolute;
     right:40px;
     top:130px;
-    width:320px;
+    width:330px;
     max-width:90vw;
     background:white;
     padding:20px;
@@ -133,10 +119,6 @@ button{
     text-align:left;
 }
 
-.folder:hover{
-    background:#ddd;
-}
-
 .social-main{
     display:flex;
     justify-content:space-between;
@@ -145,7 +127,6 @@ button{
 
 #folderArrow{
     color:#777;
-    font-size:14px;
 }
 
 .sub-folder{
@@ -169,10 +150,7 @@ button{
 .delete-folder{
     background:#e74c3c;
     padding:8px;
-    flex-shrink:0;
 }
-
-/* GRAPH + DETAILS */
 
 .main{
     display:flex;
@@ -201,28 +179,20 @@ button{
     background:#e74c3c;
 }
 
-/* MOBILE RESPONSIVE */
-
-@media (max-width:768px){
-
+@media(max-width:768px){
     body{
         padding:10px;
     }
 
     h1{
         font-size:24px;
-        margin-bottom:15px;
     }
 
     .search-container{
         flex-direction:column;
-        gap:8px;
     }
 
-    .search-box{
-        width:100%;
-    }
-
+    .search-box,
     .search-container button{
         width:100%;
     }
@@ -235,11 +205,6 @@ button{
     .controls input,
     .controls select,
     .controls button{
-        width:100%;
-        font-size:16px;
-    }
-
-    .menu-btn{
         width:100%;
     }
 
@@ -264,31 +229,9 @@ button{
         left:5%;
         right:5%;
         width:90%;
-        max-width:none;
-    }
-
-    .folder-row{
-        width:100%;
-    }
-
-    .folder-name{
-        white-space:normal;
     }
 }
 
-/* VERY SMALL PHONES */
-
-@media (max-width:420px){
-
-    h1{
-        font-size:21px;
-    }
-
-    #cy{
-        height:360px;
-    }
-
-    button{
-        font-size:15px;
-    }
+.reset{
+    background:#e74c3c;
 }
