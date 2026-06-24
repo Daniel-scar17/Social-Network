@@ -1,5 +1,153 @@
-let currentGraph = localStorage.getItem("currentGraph") || "Daniel Lago's Socials";
-let isSearchMode = false;
+let defaultSocialData = {
+
+    "April": {
+        "Facebook": [
+            "Arianne",
+            "Craig",
+            "Daniel",
+            "Kelly",
+            "Viel"
+        ],
+        "TikTok": [
+            "Daniel",
+            "Kelly"
+        ],
+        "X": [
+            "Craig"
+        ]
+    },
+
+    "Arianne": {
+        "Facebook": [
+            "April"
+        ],
+        "Instagram": [
+            "Daniel"
+        ],
+        "TikTok": [
+            "Viel"
+        ]
+    },
+
+    "Craig": {
+        "Facebook": [
+            "April"
+        ],
+        "X": [
+            "April",
+            "Kelly"
+        ]
+    },
+
+    "Daniel": {
+        "Facebook": [
+            "April"
+        ],
+        "Instagram": [
+            "Arianne"
+        ],
+        "TikTok": [
+            "April",
+            "Viel"
+        ]
+    },
+
+    "Kelly": {
+        "Facebook": [
+            "April"
+        ],
+        "TikTok": [
+            "April"
+        ],
+        "X": [
+            "Craig"
+        ]
+    },
+
+    "Viel": {
+        "Facebook": [
+            "April"
+        ],
+        "TikTok": [
+            "Daniel",
+            "Arianne"
+        ]
+    }
+
+};
+
+let socialData =
+    JSON.parse(localStorage.getItem("socialData"))
+    || defaultSocialData;
+
+let currentPerson = null;
+let selectedNodeId = null;
+
+const cy = cytoscape({
+    container: document.getElementById("cy"),
+    elements: [],
+
+    style:[
+        {
+            selector:"node",
+            style:{
+                "background-color":"data(color)",
+                "label":"data(label)",
+                "text-valign":"center",
+                "text-halign":"center",
+                "color":"#222",
+                "width":65,
+                "height":65
+            }
+        },
+        {
+            selector:"edge",
+            style:{
+                "width":5,
+                "curve-style":"bezier",
+                "line-color":"#ccc"
+            }
+        },
+        {
+            selector:'edge[platform="Facebook"]',
+            style:{
+                "line-color":"#1877F2"
+            }
+        },
+        {
+            selector:'edge[platform="Instagram"]',
+            style:{
+                "line-color":"#C13584"
+            }
+        },
+        {
+            selector:'edge[platform="TikTok"]',
+            style:{
+                "line-color":"#000000"
+            }
+        },
+        {
+            selector:'edge[platform="X"]',
+            style:{
+                "line-color":"#666666"
+            }
+        },
+        {
+            selector:"node.highlighted",
+            style:{
+                "background-color":"#2ecc71",
+                "border-width":4,
+                "border-color":"#27ae60"
+            }
+        }
+    ],
+
+    layout:{
+        name:"cose",
+        animate:true,
+        padding:50
+    }
+});
 
 function makeId(name){
     return name.trim()
@@ -8,504 +156,303 @@ function makeId(name){
         .replace(/^_|_$/g, "");
 }
 
-function getGraphKey(name){
-    return "graph_" + name;
+function saveData(){
+    localStorage.setItem("socialData", JSON.stringify(socialData));
+    loadSocialFolders();
+    alert("Data saved.");
 }
 
-function getGraphNames(){
-    let graphs = JSON.parse(localStorage.getItem("graphNames"));
+function addSocialConnection(){
+    const mainPerson =
+        document.getElementById("mainPerson").value.trim();
 
-    if(!graphs){
-        graphs = ["Daniel Lago's Socials"];
-        localStorage.setItem("graphNames", JSON.stringify(graphs));
-    }
+    const connectedPerson =
+        document.getElementById("connectedPerson").value.trim();
 
-    return graphs;
-}
+    const platform =
+        document.getElementById("platform").value;
 
-const defaultData = [
-    { data:{ id:'daniel_lago', label:'Daniel Lago', type:'user' } },
-    { data:{ id:'john_cruz', label:'John Cruz' } },
-    { data:{ id:'jade_cristian', label:'Jade Cristian' } },
-
-    { data:{ id:'e1', source:'daniel_lago', target:'john_cruz', platform:'Facebook' } },
-    { data:{ id:'e2', source:'daniel_lago', target:'jade_cristian', platform:'Instagram' } }
-];
-
-let networkData = [];
-
-const cy = cytoscape({
-    container: document.getElementById('cy'),
-    elements: networkData,
-
-    style:[
-        {
-            selector:'node',
-            style:{
-                'background-color':'#4a90e2',
-                'label':'data(label)',
-                'text-valign':'center',
-                'text-halign':'center',
-                'color':'#222',
-                'width':65,
-                'height':65
-            }
-        },
-        {
-            selector:'node[type="user"]',
-            style:{
-                'background-color':'#e67e22',
-                'width':80,
-                'height':80,
-                'font-weight':'bold'
-            }
-        },
-        {
-            selector:'edge',
-            style:{
-                'width':5,
-                'curve-style':'bezier'
-            }
-        },
-        {
-            selector:'edge[platform="Facebook"]',
-            style:{ 'line-color':'#1877F2' }
-        },
-        {
-            selector:'edge[platform="Instagram"]',
-            style:{ 'line-color':'#C13584' }
-        },
-        {
-            selector:'edge[platform="TikTok"]',
-            style:{ 'line-color':'#000000' }
-        },
-        {
-            selector:'edge[platform="X"]',
-            style:{ 'line-color':'#666666' }
-        },
-        {
-            selector:'node.highlighted',
-            style:{
-                'background-color':'#2ecc71',
-                'border-width':4,
-                'border-color':'#27ae60'
-            }
-        },
-        {
-            selector:'edge.highlighted',
-            style:{
-                'width':8
-            }
-        }
-    ],
-
-    layout:{
-        name:'cose',
-        animate:true,
-        padding:50
-    }
-});
-
-let selectedNodeId = null;
-
-cy.on('tap','node',function(evt){
-    const node = evt.target;
-    if(selectedNodeId === node.id()){
-        cy.elements().removeClass('highlighted');
-        selectedNodeId = null;
-        document.getElementById('details').innerHTML =
-            "Click a person to view connections.";
-    }
-    else{
-        selectedNodeId = node.id();
-        showNodeDetails(node);
-    }
-});
-
-cy.on('tap',function(evt){
-    if(evt.target === cy){
-        cy.elements().removeClass('highlighted');
-        selectedNodeId = null;
-        document.getElementById('details').innerHTML =
-            "Click a person to view connections.";
-    }
-});
-
-function showNodeDetails(node){
-    cy.elements().removeClass('highlighted');
-
-    node.addClass('highlighted');
-    node.connectedEdges().addClass('highlighted');
-    node.neighborhood('node').addClass('highlighted');
-
-    let connectionList = "";
-
-    node.connectedEdges().forEach(edge => {
-        const otherPerson =
-            edge.source().id() === node.id()
-            ? edge.target().data('label')
-            : edge.source().data('label');
-
-        connectionList += `
-            <div>
-                <b>${otherPerson}</b><br>
-                Platform: ${edge.data('platform')}<br>
-
-                <button class="remove" onclick="removeConnection('${edge.id()}')">
-                    Remove Connection
-                </button>
-            </div>
-            <hr>
-        `;
-    });
-
-    document.getElementById('details').innerHTML = `
-        <h3>${node.data('label')}</h3>
-        Direct Connections: ${node.degree()}
-        <hr>
-        ${connectionList || "No connections found."}
-    `;
-}
-
-function addConnection(){
-    if(isSearchMode){
-        openFullCurrentGraph();
-    }
-
-    const p1 = document.getElementById('person1').value.trim();
-    const p2 = document.getElementById('person2').value.trim();
-    const platform = document.getElementById('platform').value;
-
-    if(!p1 || !p2){
-        alert("Enter both names.");
+    if(!mainPerson || !connectedPerson){
+        alert("Enter main person and connected person.");
         return;
     }
 
-    const id1 = makeId(p1);
-    const id2 = makeId(p2);
-
-    if(id1 === id2){
-        alert("You cannot connect the same person to themselves.");
+    if(mainPerson.toLowerCase() === connectedPerson.toLowerCase()){
+        alert("A person cannot connect to themselves.");
         return;
     }
 
-    if(cy.getElementById(id1).length === 0){
-        cy.add({
-            group:'nodes',
-            data:{ id:id1, label:p1 }
-        });
+    if(!socialData[mainPerson]){
+        socialData[mainPerson] = {};
     }
 
-    if(cy.getElementById(id2).length === 0){
-        cy.add({
-            group:'nodes',
-            data:{ id:id2, label:p2 }
-        });
+    if(!socialData[mainPerson][platform]){
+        socialData[mainPerson][platform] = [];
     }
 
-    cy.add({
-        group:'edges',
-        data:{
-            id:'edge_' + Date.now(),
-            source:id1,
-            target:id2,
-            platform:platform
-        }
-    });
+    if(!socialData[mainPerson][platform].includes(connectedPerson)){
+        socialData[mainPerson][platform].push(connectedPerson);
+    }
 
-    runLayout();
-    saveCurrentGraph();
+    if(!socialData[connectedPerson]){
+        socialData[connectedPerson] = {};
+    }
 
-    document.getElementById('person1').value = "";
-    document.getElementById('person2').value = "";
+    if(!socialData[connectedPerson][platform]){
+        socialData[connectedPerson][platform] = [];
+    }
+
+    if(!socialData[connectedPerson][platform].includes(mainPerson)){
+        socialData[connectedPerson][platform].push(mainPerson);
+    }
+
+    currentPerson = mainPerson;
+
+    saveData();
+    buildGraph(mainPerson);
+
+    document.getElementById("mainPerson").value = "";
+    document.getElementById("connectedPerson").value = "";
 }
 
-function removeConnection(edgeId){
-    if(isSearchMode){
-        openFullCurrentGraph();
-    }
-
-    const edge = cy.getElementById(edgeId);
-
-    if(edge.length > 0){
-        const sourceNode = edge.source();
-        const targetNode = edge.target();
-
-        edge.remove();
-
-        if(sourceNode.degree() === 0 && sourceNode.data('type') !== 'user'){
-            sourceNode.remove();
-        }
-
-        if(targetNode.degree() === 0 && targetNode.data('type') !== 'user'){
-            targetNode.remove();
-        }
-    }
-
-    runLayout();
-    saveCurrentGraph();
-
-    document.getElementById('details').innerHTML =
-        "Connection removed.";
-}
-
-function searchPerson(){
-    const searchValue = document.getElementById("searchName").value.trim();
-
-    if(!searchValue){
-        alert("Enter a name to search.");
-        return;
-    }
-
-    const searchId = makeId(searchValue);
-    const graphs = getGraphNames();
-
-    for(let graphName of graphs){
-        const savedGraph = localStorage.getItem(getGraphKey(graphName));
-
-        if(!savedGraph){
-            continue;
-        }
-
-        const data = JSON.parse(savedGraph);
-
-        const foundNode = data.find(item =>
-            item.data.id === searchId && !item.data.source
-        );
-
-        if(foundNode){
-            currentGraph = graphName;
-            localStorage.setItem("currentGraph", currentGraph);
-
-            const connectedEdges = data.filter(item =>
-                item.data.source === searchId ||
-                item.data.target === searchId
-            );
-
-            const connectedNodeIds = new Set();
-            connectedNodeIds.add(searchId);
-
-            connectedEdges.forEach(edge => {
-                connectedNodeIds.add(edge.data.source);
-                connectedNodeIds.add(edge.data.target);
-            });
-
-            const connectedNodes = data.filter(item =>
-                !item.data.source && connectedNodeIds.has(item.data.id)
-            );
-
-            cy.elements().remove();
-            cy.add([...connectedNodes, ...connectedEdges]);
-
-            isSearchMode = true;
-
-            loadGraphList();
-            runLayout();
-
-            const node = cy.getElementById(searchId);
-
-            cy.elements().removeClass("highlighted");
-
-            node.addClass("highlighted");
-            node.connectedEdges().addClass("highlighted");
-            node.neighborhood("node").addClass("highlighted");
-
-            cy.animate({
-                center: { eles: node },
-                zoom: 1.5
-            }, {
-                duration: 700
-            });
-
-            showNodeDetails(node);
-            return;
-        }
-    }
-
+function buildGraph(personName){
     cy.elements().remove();
 
-    document.getElementById("details").innerHTML =
-        "Person not found in any saved graph: " + searchValue;
-}
-
-function openFullCurrentGraph(){
-    const savedGraph = localStorage.getItem(getGraphKey(currentGraph));
-
-    if(savedGraph){
-        cy.elements().remove();
-        cy.add(JSON.parse(savedGraph));
-        runLayout();
+    if(!socialData[personName]){
+        document.getElementById("details").innerHTML =
+            "No saved data for " + personName;
+        return;
     }
 
-    isSearchMode = false;
-}
+    const nodes = new Map();
+    const edges = [];
 
-function runLayout(){
+    nodes.set(makeId(personName), {
+        data:{
+            id:makeId(personName),
+            label:personName
+        }
+    });
+
+    const platforms = socialData[personName];
+
+    for(let platform in platforms){
+
+        platforms[platform].forEach(connection => {
+
+            nodes.set(makeId(connection), {
+                data:{
+                    id:makeId(connection),
+                    label:connection
+                }
+            });
+
+            edges.push({
+                data:{
+                    id:
+                        makeId(personName) + "_" +
+                        makeId(connection) + "_" +
+                        platform,
+
+                    source:makeId(personName),
+                    target:makeId(connection),
+                    platform:platform
+                }
+            });
+
+        });
+
+    }
+
+    cy.add([
+        ...nodes.values(),
+        ...edges
+    ]);
+
+    applyVertexColoring();
+
     cy.layout({
-        name:'cose',
+        name:"cose",
         animate:true,
         padding:50
     }).run();
+
+    showPersonDetails(personName);
 }
 
-function saveCurrentGraph(){
-    if(isSearchMode){
-        return;
-    }
+function applyVertexColoring(){
+    const colors = [
+        "#e74c3c",
+        "#3498db",
+        "#2ecc71",
+        "#f1c40f",
+        "#9b59b6",
+        "#e67e22"
+    ];
 
-    if(cy.elements().length === 0){
-        return;
-    }
+    cy.nodes().forEach(node => {
+        let usedColors = [];
 
-    localStorage.setItem(
-        getGraphKey(currentGraph),
-        JSON.stringify(cy.elements().jsons())
-    );
-}
+        node.neighborhood("node").forEach(neighbor => {
+            if(neighbor.data("color")){
+                usedColors.push(neighbor.data("color"));
+            }
+        });
 
-function saveData(){
-    if(isSearchMode){
-        openFullCurrentGraph();
-    }
-
-    saveCurrentGraph();
-    alert(currentGraph + " saved.");
-}
-
-function createGraph(){
-    if(isSearchMode){
-        openFullCurrentGraph();
-    }
-
-    let name = document.getElementById("graphName").value.trim();
-
-    if(!name){
-        alert("Enter a graph name.");
-        return;
-    }
-
-    if(!name.toLowerCase().includes("socials")){
-        name = name + "'s Socials";
-    }
-
-    let graphs = getGraphNames();
-
-    if(graphs.includes(name)){
-        alert("Graph already exists.");
-        return;
-    }
-
-    saveCurrentGraph();
-
-    graphs.push(name);
-    localStorage.setItem("graphNames", JSON.stringify(graphs));
-
-    currentGraph = name;
-    localStorage.setItem("currentGraph", currentGraph);
-
-    cy.elements().remove();
-
-    const personName = name.replace("'s Socials", "");
-
-    cy.add([
-        {
-            data:{
-                id: makeId(personName),
-                label: personName,
-                type: "user"
+        for(let color of colors){
+            if(!usedColors.includes(color)){
+                node.data("color", color);
+                break;
             }
         }
-    ]);
-
-    isSearchMode = false;
-
-    runLayout();
-    saveCurrentGraph();
-
-    document.getElementById("graphName").value = "";
-
-    loadGraphList();
-    loadSocialFolders();
-
-    document.getElementById("details").innerHTML =
-        "New graph created: " + name;
-}
-
-function switchGraph(){
-    const selected = document.getElementById("graphList").value;
-
-    if(!selected){
-        return;
-    }
-
-    if(!isSearchMode){
-        saveCurrentGraph();
-    }
-
-    currentGraph = selected;
-    localStorage.setItem("currentGraph", currentGraph);
-
-    const savedGraph = localStorage.getItem(getGraphKey(currentGraph));
-
-    cy.elements().remove();
-
-    if(savedGraph){
-        const graphData = JSON.parse(savedGraph);
-
-        if(graphData.length > 0){
-            cy.add(graphData);
-        }else{
-            createMainPersonNode(currentGraph);
-        }
-    }else{
-        createMainPersonNode(currentGraph);
-    }
-
-    isSearchMode = false;
-    runLayout();
-
-    showSavedSocials();
-}
-
-function createMainPersonNode(graphName){
-    const personName = graphName.replace("'s Socials", "");
-
-    cy.add([
-        {
-            data:{
-                id: makeId(personName),
-                label: personName,
-                type:"user"
-            }
-        }
-    ]);
-
-    saveCurrentGraph();
-}
-
-function loadGraphList(){
-    const graphList = document.getElementById("graphList");
-    graphList.innerHTML = "";
-
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = "Select Socials";
-    placeholder.selected = true;
-    placeholder.disabled = true;
-    graphList.appendChild(placeholder);
-
-    const graphs = getGraphNames();
-
-    graphs.forEach(name => {
-        const option = document.createElement("option");
-        option.value = name;
-        option.textContent = name;
-        graphList.appendChild(option);
     });
 }
 
+function showPersonDetails(personName){
+    const data = socialData[personName];
+
+    if(!data){
+        document.getElementById("details").innerHTML =
+            "No saved data for " + personName;
+        return;
+    }
+
+    let totalConnections = 0;
+
+    for(let platform in data){
+        totalConnections += data[platform].length;
+    }
+
+    let html = `
+        <h3>${personName}</h3>
+        Direct Connections: ${totalConnections}
+        <hr>
+    `;
+
+    for(let platform in data){
+
+        html += `<b>${platform}</b><br>`;
+
+        data[platform].forEach(connection => {
+            html += `
+                <div style="margin-bottom:10px;">
+                    ${connection}
+                    <br>
+                    <button class="remove"
+                    onclick="removeConnection('${personName}', '${connection}', '${platform}')">
+                        Remove Connection
+                    </button>
+                </div>
+            `;
+        });
+
+        html += "<hr>";
+    }
+
+    document.getElementById("details").innerHTML = html;
+}
+
+function removeConnection(person, connection, platform){
+
+    if(socialData[person] && socialData[person][platform]){
+        socialData[person][platform] =
+            socialData[person][platform].filter(name => name !== connection);
+
+        if(socialData[person][platform].length === 0){
+            delete socialData[person][platform];
+        }
+    }
+
+    if(socialData[connection] && socialData[connection][platform]){
+        socialData[connection][platform] =
+            socialData[connection][platform].filter(name => name !== person);
+
+        if(socialData[connection][platform].length === 0){
+            delete socialData[connection][platform];
+        }
+    }
+
+    saveData();
+    buildGraph(person);
+}
+
+function searchPerson(){
+    const searchValue =
+        document.getElementById("searchName").value.trim();
+
+    if(!searchValue){
+        alert("Enter a name.");
+        return;
+    }
+
+    let foundName = null;
+
+    for(let person in socialData){
+        if(person.toLowerCase() === searchValue.toLowerCase()){
+            foundName = person;
+            break;
+        }
+    }
+
+    if(!foundName){
+        cy.elements().remove();
+
+        document.getElementById("details").innerHTML =
+            "Person not found: " + searchValue;
+
+        return;
+    }
+
+    currentPerson = foundName;
+
+    buildGraph(foundName);
+}
+
+cy.on("tap", "node", function(evt){
+
+    const node = evt.target;
+    const name = node.data("label");
+
+    if(selectedNodeId === node.id()){
+
+        cy.nodes().removeClass("highlighted");
+
+        selectedNodeId = null;
+
+        document.getElementById("details").innerHTML =
+            "Click a person to view connections.";
+
+    }else{
+
+        selectedNodeId = node.id();
+
+        cy.nodes().removeClass("highlighted");
+
+        node.addClass("highlighted");
+
+        node.neighborhood("node").addClass("highlighted");
+
+        showPersonDetails(name);
+
+    }
+
+});
+
+cy.on("tap", function(evt){
+
+    if(evt.target === cy){
+
+        cy.nodes().removeClass("highlighted");
+
+        selectedNodeId = null;
+
+    }
+
+});
+
 function toggleMenu(){
-    const menu = document.getElementById("sideMenu");
+    const menu =
+        document.getElementById("sideMenu");
 
     menu.style.display =
         menu.style.display === "block"
@@ -514,216 +461,154 @@ function toggleMenu(){
 }
 
 function closeMenu(){
-    document.getElementById("sideMenu").style.display = "none";
+    document.getElementById("sideMenu").style.display =
+        "none";
 }
 
 function toggleSocialFolder(){
-
     const folder =
         document.getElementById("socialFolder");
 
     const arrow =
         document.getElementById("folderArrow");
 
-
     if(folder.style.display === "block"){
-
         folder.style.display = "none";
-
         arrow.innerHTML = "▶";
-
-    }
-    else{
-
+    }else{
         folder.style.display = "block";
-
         arrow.innerHTML = "▼";
-
     }
-
-}
-
-function showClearSearch(){
-
-    const search =
-        document.getElementById("searchName");
-
-    const clear =
-        document.getElementById("clearSearch");
-
-
-    if(search.value.length > 0){
-
-        clear.style.display = "block";
-
-    }
-    else{
-
-        clear.style.display = "none";
-
-    }
-
-}
-
-
-
-function clearSearchText(){
-
-    document.getElementById("searchName").value = "";
-
-    document.getElementById("clearSearch").style.display =
-        "none";
-
 }
 
 function loadSocialFolders(){
-    const socialFolder = document.getElementById("socialFolder");
-    socialFolder.innerHTML = "";
+    const folder =
+        document.getElementById("socialFolder");
 
-    const graphs = getGraphNames();
+    folder.innerHTML = "";
 
-    graphs.forEach(name => {
-        const row = document.createElement("div");
+    Object.keys(socialData).forEach(person => {
+
+        const row =
+            document.createElement("div");
+
         row.className = "folder-row";
 
-        const folder = document.createElement("div");
-        folder.className = "folder folder-name";
-        folder.innerHTML = "📁 " + name;
+        const item =
+            document.createElement("div");
 
-        folder.onclick = function(){
-            openGraphFromFolder(name);
+        item.className = "folder folder-name";
+
+        item.innerHTML =
+            "📁 " + person + "'s Socials";
+
+        item.onclick = function(){
+            currentPerson = person;
+            buildGraph(person);
+            closeMenu();
         };
 
-        const deleteBtn = document.createElement("button");
+        const deleteBtn =
+            document.createElement("button");
+
         deleteBtn.className = "delete-folder";
+
         deleteBtn.innerHTML = "🗑️";
 
         deleteBtn.onclick = function(event){
             event.stopPropagation();
-            deleteGraph(name);
+            deletePersonData(person);
         };
 
-        row.appendChild(folder);
+        row.appendChild(item);
         row.appendChild(deleteBtn);
-        socialFolder.appendChild(row);
+        folder.appendChild(row);
+
     });
 }
 
-function deleteGraph(name){
-    const confirmDelete = confirm("Delete " + name + "?");
+function deletePersonData(person){
+    const confirmDelete =
+        confirm("Delete " + person + "'s saved socials?");
 
     if(!confirmDelete){
         return;
     }
 
-    let graphs = getGraphNames();
-    graphs = graphs.filter(graph => graph !== name);
+    delete socialData[person];
 
-    localStorage.setItem("graphNames", JSON.stringify(graphs));
-    localStorage.removeItem(getGraphKey(name));
+    for(let otherPerson in socialData){
 
-    currentGraph = graphs[0] || "Daniel Lago's Socials";
-    localStorage.setItem("currentGraph", currentGraph);
+        for(let platform in socialData[otherPerson]){
 
-    const savedGraph = localStorage.getItem(getGraphKey(currentGraph));
+            socialData[otherPerson][platform] =
+                socialData[otherPerson][platform]
+                .filter(name => name !== person);
 
-    cy.elements().remove();
+            if(socialData[otherPerson][platform].length === 0){
+                delete socialData[otherPerson][platform];
+            }
 
-    if(savedGraph){
-        cy.add(JSON.parse(savedGraph));
+        }
+
     }
 
-    isSearchMode = false;
+    saveData();
 
-    runLayout();
-    loadGraphList();
-    loadSocialFolders();
+    cy.elements().remove();
 
     document.getElementById("details").innerHTML =
-        name + " was deleted.";
+        person + "'s socials deleted.";
 }
 
-function openGraphFromFolder(name){
-    if(!isSearchMode){
-        saveCurrentGraph();
-    }
+function resetData(){
+    const confirmReset =
+        confirm("Reset all saved data and load the default people?");
 
-    currentGraph = name;
-    localStorage.setItem("currentGraph", currentGraph);
-
-    loadGraphList();
-
-    const savedGraph = localStorage.getItem(getGraphKey(currentGraph));
-
-    cy.elements().remove();
-
-    if(savedGraph){
-        cy.add(JSON.parse(savedGraph));
-    }
-
-    isSearchMode = false;
-
-    runLayout();
-    showSavedSocials();
-
-    document.getElementById("sideMenu").style.display = "none";
-}
-
-function showSavedSocials(){
-    const savedData = localStorage.getItem(getGraphKey(currentGraph));
-
-    if(!savedData){
-        document.getElementById('details').innerHTML =
-            "No saved socials yet.";
+    if(!confirmReset){
         return;
     }
 
-    const data = JSON.parse(savedData);
+    localStorage.removeItem("socialData");
 
-    const nodes = data.filter(item => !item.data.source);
-    const edges = data.filter(item => item.data.source && item.data.target);
+    socialData =
+        JSON.parse(JSON.stringify(defaultSocialData));
 
-    let result = `
-        <h3>📁 ${currentGraph}</h3>
-        <hr>
-    `;
+    cy.elements().remove();
 
-    if(edges.length === 0){
-        result += "No connections saved yet.";
-    }
+    loadSocialFolders();
 
-    edges.forEach(edge => {
-        const source = nodes.find(n => n.data.id === edge.data.source);
-        const target = nodes.find(n => n.data.id === edge.data.target);
+    document.getElementById("details").innerHTML =
+        "Default data loaded again. Search a person or open a saved social folder.";
 
-        if(source && target){
-            result += `
-                <p>
-                    <b>${source.data.label}</b>
-                    connected to
-                    <b>${target.data.label}</b><br>
-                    Platform: ${edge.data.platform}
-                </p>
-                <hr>
-            `;
-        }
-    });
-
-    document.getElementById('details').innerHTML = result;
+    alert("Data reset successfully.");
 }
 
-loadGraphList();
-loadSocialFolders();
+function clearSearchText(){
+    document.getElementById("searchName").value = "";
 
-document.getElementById("details").innerHTML =
-    "No graph opened yet. Search a name, create a graph, or open one from the menu.";
+    document.getElementById("clearSearch").style.display =
+        "none";
+}
 
-window.addEventListener("beforeunload", function(){
-    saveCurrentGraph();
+document.getElementById("searchName")
+.addEventListener("input", function(){
+
+    document.getElementById("clearSearch").style.display =
+        this.value.length > 0 ? "block" : "none";
+
 });
 
-document.getElementById("searchName").addEventListener("keydown", function(event){
+document.getElementById("searchName")
+.addEventListener("keydown", function(event){
+
     if(event.key === "Enter"){
         searchPerson();
     }
+
 });
+
+loadSocialFolders();
+
+document.getElementById("details").innerHTML =
+    "Search a person or open a saved social folder.";
