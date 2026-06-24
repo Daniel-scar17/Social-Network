@@ -14,11 +14,6 @@ h1{
     font-size:34px;
 }
 
-
-/* ======================
-   SEARCH BAR
-====================== */
-
 .search-container{
     display:flex;
     justify-content:center;
@@ -77,11 +72,6 @@ h1{
 
     cursor:pointer;
 }
-
-
-/* ======================
-   INPUT CONTROLS
-====================== */
 
 .controls{
 
@@ -150,13 +140,6 @@ button{
     font-size:22px;
 
 }
-
-
-
-/* ======================
-   MENU
-====================== */
-
 
 .side-menu{
 
@@ -300,13 +283,6 @@ button{
 
 }
 
-
-
-/* ======================
-   GRAPH AREA
-====================== */
-
-
 .main{
 
     display:flex;
@@ -365,15 +341,6 @@ button{
 
 }
 
-
-
-
-
-/* ======================
-   MOBILE RESPONSIVE
-====================== */
-
-
 @media(max-width:768px){
 
 
@@ -389,11 +356,6 @@ button{
         font-size:28px;
 
     }
-
-
-
-    /* SEARCH */
-
 
     .search-container{
 
@@ -466,13 +428,7 @@ button{
 
 
     }
-
-
-
-
-    /* GRAPH */
-
-
+    
     .main{
 
         flex-direction:column;
@@ -500,12 +456,6 @@ button{
         min-height:200px;
 
     }
-
-
-
-
-
-    /* MENU */
 
 
     .side-menu{
