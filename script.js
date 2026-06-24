@@ -1,76 +1,287 @@
 let defaultSocialData = {
 
-    "April": {
+    "Regine": {
         "Facebook": [
-            "Arianne",
+            "April",
             "Craig",
-            "Daniel",
-            "Kelly",
-            "Viel"
-        ],
-        "TikTok": [
-            "Daniel",
-            "Kelly"
-        ],
-        "X": [
-            "Craig"
+            "Cresa",
+            "Elmie",
+            "Jenelyn",
+            "Josefl",
+            "Kelly Grace",
+            "Kyrl",
+            "Nylvia",
+            "Phoeboy",
+            "Row",
+            "Steven",
+            "Viel Son"
         ]
     },
 
-    "Arianne": {
+
+    "April": {
+        "Facebook": [
+            "Regine",
+            "Ariane",
+            "Craig",
+            "Daniel",
+            "Kelly"
+        ],
+        "Instagram": [
+            "Ariane",
+            "Daniel"
+        ],
+        "TikTok": [
+            "Kelly"
+        ]
+    },
+
+
+    "Daniel": {
+        "Facebook": [
+            "April",
+            "Nylvia",
+            "Phoeboy"
+        ],
+        "Instagram": [
+            "April"
+        ],
+        "TikTok": [
+            "Kelly",
+            "Viel"
+        ]
+    },
+
+
+    "Ariane": {
         "Facebook": [
             "April"
         ],
         "Instagram": [
             "Daniel"
-        ],
-        "TikTok": [
-            "Viel"
         ]
     },
+
 
     "Craig": {
         "Facebook": [
-            "April"
-        ],
-        "X": [
             "April",
-            "Kelly"
+            "Regine"
         ]
     },
 
-    "Daniel": {
+
+    "Kelly": {
         "Facebook": [
-            "April"
-        ],
-        "Instagram": [
-            "Arianne"
+            "April",
+            "Nylvia"
         ],
         "TikTok": [
-            "April",
+            "Daniel"
+        ]
+    },
+
+
+    "Viel": {
+        "Facebook": [
+            "Mark"
+        ],
+        "TikTok": [
+            "Daniel",
+            "Vince"
+        ]
+    },
+
+
+    "Adrian": {
+        "Facebook": [
+            "Dunavan",
+            "Juhan"
+        ]
+    },
+
+
+    "Althea": {
+        "Facebook": [
+            "Nylvia"
+        ]
+    },
+
+
+    "Bin": {
+        "Facebook": [
+            "Adrian",
+            "James",
+            "Johan",
+            "Mark"
+        ]
+    },
+
+
+    "Cresa": {
+        "Facebook": [
+            "Regine",
+            "Ivan"
+        ]
+    },
+
+
+    "Dunavan": {
+        "Facebook": [
+            "Adrian"
+        ]
+    },
+
+
+    "Elmie": {
+        "Facebook": [
+            "Regine"
+        ]
+    },
+
+
+    "Gian": {
+        "Facebook": [
+            "Josefl"
+        ]
+    },
+
+
+    "Ivan": {
+        "Facebook": [
+            "Cresa"
+        ]
+    },
+
+
+    "James": {
+        "Facebook": [
+            "Bin"
+        ]
+    },
+
+
+    "Jenelyn": {
+        "Facebook": [
+            "Regine",
+            "Joshua"
+        ]
+    },
+
+
+    "Josefl": {
+        "Facebook": [
+            "Regine",
+            "Gian",
+            "Mark"
+        ]
+    },
+
+
+    "Johan": {
+        "Facebook": [
+            "Bin"
+        ]
+    },
+
+
+    "Joshua": {
+        "Facebook": [
+            "Jenelyn"
+        ]
+    },
+
+
+    "Juhan": {
+        "Facebook": [
+            "Adrian"
+        ]
+    },
+
+
+    "Kelly": {
+        "Facebook": [
+            "Regine",
+            "Nylvia",
+            "Phoeboy",
+            "Daniel"
+        ]
+    },
+
+
+    "Kyrl": {
+        "Facebook": [
+            "Regine"
+        ]
+    },
+
+
+    "Mark": {
+        "Facebook": [
+            "Bin"
+        ]
+    },
+
+
+    "Mark": {
+        "Facebook": [
+            "Josefl",
             "Viel"
         ]
     },
 
-    "Kelly": {
+
+    "Nylvia": {
         "Facebook": [
-            "April"
-        ],
-        "TikTok": [
-            "April"
-        ],
-        "X": [
-            "Craig"
+            "Regine",
+            "Daniel",
+            "Kelly",
+            "Althea"
         ]
     },
 
+
+    "Phoeboy": {
+        "Facebook": [
+            "Regine",
+            "Daniel",
+            "Nylvia"
+        ]
+    },
+
+
+    "Row": {
+        "Facebook": [
+            "Regine"
+        ]
+    },
+
+
+    "Steven": {
+        "Facebook": [
+            "Regine"
+        ]
+    },
+
+
     "Viel": {
         "Facebook": [
-            "April"
-        ],
-        "TikTok": [
+            "Regine"
+        ]
+    },
+
+
+    "Vince": {
+        "Facebook": [
+            "Viel"
+        ]
+    },
+
+
+    "Zeeshan": {
+        "Facebook": [
             "Daniel",
-            "Arianne"
+            "Regine"
         ]
     }
 
@@ -586,61 +797,35 @@ function toggleSocialFolder(){
 
 
 function loadSocialFolders(){
-
-    let folder =
-    document.getElementById("socialFolder");
-
+    let folder = document.getElementById("socialFolder");
     folder.innerHTML = "";
 
-    Object.keys(socialData).forEach(person=>{
-
-        let row =
-        document.createElement("div");
-
+    Object.keys(socialData).sort().forEach(person => {
+        let row = document.createElement("div");
         row.className = "folder-row";
 
-
-        let item =
-        document.createElement("div");
-
+        let item = document.createElement("div");
         item.className = "folder folder-name";
-
-        item.innerHTML =
-        "📁 " + person + "'s Socials";
+        item.innerHTML = "📁 " + person + "'s Socials";
 
         item.onclick = function(){
-
             buildGraph(person);
-
             closeMenu();
-
         };
 
-
-        let deleteButton =
-        document.createElement("button");
-
+        let deleteButton = document.createElement("button");
         deleteButton.className = "delete-folder";
-
         deleteButton.innerHTML = "🗑️";
 
         deleteButton.onclick = function(event){
-
             event.stopPropagation();
-
             deletePerson(person);
-
         };
 
-
         row.appendChild(item);
-
         row.appendChild(deleteButton);
-
         folder.appendChild(row);
-
     });
-
 }
 
 
