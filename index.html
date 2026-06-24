@@ -1,67 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Social Media Network</title>
-
-<link rel="stylesheet" href="style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Network</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
 </head>
-
 <body>
 
-<h1>My Social Media Network</h1>
+    <h1>My Social Media Network</h1>
 
-<div class="search-container">
-    <div class="search-box">
-        <input id="searchName" placeholder="Search name">
-        <button id="clearSearch" onclick="clearSearchText()">✕</button>
+    <div class="search-container">
+        <div class="search-box">
+            <input id="searchName" placeholder="Search name">
+            <button id="clearSearch" onclick="clearSearchText()">✕</button>
+        </div>
+        <button onclick="searchPerson()">Search</button>
     </div>
 
-    <button onclick="searchPerson()">Search</button>
-</div>
+    <div class="controls">
+        <input id="mainPerson" placeholder="Main Person">
+        <input id="connectedPerson" placeholder="Connected Person">
 
-<div class="controls">
-    <input id="mainPerson" placeholder="Main Person">
-    <input id="connectedPerson" placeholder="Connected Person">
+        <select id="platform">
+            <option>Facebook</option>
+            <option>Instagram</option>
+            <option>TikTok</option>
+            <option>X</option>
+        </select>
 
-    <select id="platform">
-        <option>Facebook</option>
-        <option>Instagram</option>
-        <option>TikTok</option>
-        <option>X</option>
-    </select>
-
-    <button onclick="addSocialConnection()">Add Connection</button>
-    <button class="save" onclick="saveData()">Save</button>
-    <button class="reset" onclick="resetData()">Reset Data</button>
-
-    <button class="menu-btn" onclick="toggleMenu()">☰</button>
-</div>
-
-<div id="sideMenu" class="side-menu">
-    <button class="close-btn" onclick="closeMenu()">✕</button>
-
-    <h3>Menu</h3>
-
-    <div class="folder social-main" onclick="toggleSocialFolder()">
-        <span>📁 Socials</span>
-        <span id="folderArrow">▶</span>
+        <button onclick="addSocialConnection()">Add Connection</button>
+        <button class="save" onclick="saveData()">Save</button>
+        <button class="reset" onclick="resetData()">Reset Data</button>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 
-    <div id="socialFolder" class="sub-folder"></div>
-</div>
+    <div id="sideMenu" class="side-menu">
+        <button class="close-btn" onclick="closeMenu()">✕</button>
 
-<div class="main">
-    <div id="cy"></div>
+        <h3>Menu</h3>
 
-    <div id="details">
-        No graph opened yet. Search a name or add a connection.
+        <div class="folder social-main" onclick="toggleSocialFolder()">
+            <span>📁 Socials</span>
+            <span id="folderArrow">▶</span>
+        </div>
+
+        <div id="socialFolder" class="sub-folder"></div>
     </div>
-</div>
 
-<script src="script.js"></script>
+    <div class="main">
+        <div id="cy"></div>
+
+        <div id="details">
+            Search a person or open a saved social folder.
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 
 </body>
 </html>
